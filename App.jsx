@@ -28,13 +28,14 @@ App = React.createClass({
                     }).fetch(),
             incompleteCount: Tasks.find({
                                 checked: {$ne: true}
-                            }).count()
+                            }).count(),
+            currentUser: Meteor.user()
         };
     },
 
     renderTasks() {
         return this.data.tasks.map((task) => {
-            return <Task key={task._id} task={task} />;
+            return <Task key={task._id} task={task} showPrivateBtn={true} />;
         });
     },
 
@@ -44,10 +45,7 @@ App = React.createClass({
         const input = ReactDOM.findDOMNode(this.refs.textInput),
             text = input.value.trim();
 
-        Tasks.insert({
-            text: text,
-            createdAt: new Date()
-        });
+        Meteor.call('addTask', text);
 
         input.value = "";
     },
@@ -67,18 +65,23 @@ App = React.createClass({
                     Hide Completed Tasks
                 </label>
 
-                <form className="new-task" onSubmit={this.handleSubmit}>
-                    <input 
-                        type="text"
-                        ref="textInput"
-                        placeholder="Type something"
-                    />
+                <AccountsUIWrapper />
 
-                </form>
+                { this.data.currentUser ?
+                    <form className="new-task" onSubmit={this.handleSubmit}>
+                        <input 
+                            type="text"
+                            ref="textInput"
+                            placeholder="Type something"
+                        />
+
+                    </form> : ''
+                }
+
             </header>
 
             <ul>
-              {this.renderTasks()}
+                {this.renderTasks()}
             </ul>
           </div>
         );
