@@ -83,6 +83,8 @@ App = React.createClass({
             <ul>
                 {this.renderTasks()}
             </ul>
+
+            <VideoContainer />
           </div>
         );
     }
